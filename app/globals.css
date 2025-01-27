@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 250 100% 99%;
+  --foreground: 250 10% 10%;
+  
+  --card: 0 0% 100%;
+  --card-foreground: 250 10% 10%;
+  
+  --popover: 0 0% 100%;
+  --popover-foreground: 250 10% 10%;
+  
+  --primary: 250 95% 60%;
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 250 30% 95%;
+  --secondary-foreground: 250 10% 10%;
+  
+  --muted: 250 30% 95%;
+  --muted-foreground: 250 5% 45%;
+  
+  --accent: 250 30% 95%;
+  --accent-foreground: 250 10% 10%;
+  
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+
+  --border: 250 20% 90%;
+  --input: 250 20% 90%;
+  --ring: 250 95% 60%;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: 250 20% 10%;
+  --foreground: 250 10% 98%;
+  
+  --card: 250 20% 15%;
+  --card-foreground: 250 10% 98%;
+  
+  --popover: 250 20% 15%;
+  --popover-foreground: 250 10% 98%;
+  
+  --primary: 250 95% 65%;
+  --primary-foreground: 250 10% 98%;
+  
+  --secondary: 250 30% 20%;
+  --secondary-foreground: 250 10% 98%;
+  
+  --muted: 250 30% 20%;
+  --muted-foreground: 250 5% 65%;
+  
+  --accent: 250 30% 20%;
+  --accent-foreground: 250 10% 98%;
+  
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 250 10% 98%;
+  
+  --border: 250 20% 25%;
+  --input: 250 20% 25%;
+  --ring: 250 95% 65%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.task-card {
+  @apply bg-white rounded-lg shadow-md p-4 mb-3 cursor-move hover:shadow-lg transition-shadow;
+}
+
+.board-column {
+  @apply bg-secondary/50 rounded-lg p-4 min-h-[500px] w-[300px] flex-shrink-0;
+}
+
+.dragging {
+  @apply opacity-50 shadow-xl;
+}
