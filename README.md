@@ -19,6 +19,11 @@ TaskFlow is a simple yet powerful task tracking application that allows users to
 - **Next.js:** For server-side rendering and optimized performance.
 - **LocalStorage:** For persisting tasks and columns.
 
+## Screenshot
+Here is a screenshot of the application:
+
+![Task Management Board](public/example.png)
+
 ## Installation
 
 To get started with TaskFlow, follow the steps below:
