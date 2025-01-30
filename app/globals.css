@@ -3,65 +3,65 @@
 @tailwind utilities;
 
 :root {
-  --background: 250 100% 99%;
-  --foreground: 250 10% 10%;
+  --background: 0 0% 100%;
+  --foreground: 0 0% 10%;
   
   --card: 0 0% 100%;
-  --card-foreground: 250 10% 10%;
+  --card-foreground: 0 0% 10%;
   
   --popover: 0 0% 100%;
-  --popover-foreground: 250 10% 10%;
+  --popover-foreground: 0 0% 10%;
   
-  --primary: 250 95% 60%;
+  --primary: 0 0% 9%;
   --primary-foreground: 0 0% 100%;
   
-  --secondary: 250 30% 95%;
-  --secondary-foreground: 250 10% 10%;
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 10%;
   
-  --muted: 250 30% 95%;
-  --muted-foreground: 250 5% 45%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
   
-  --accent: 250 30% 95%;
-  --accent-foreground: 250 10% 10%;
+  --accent: 0 0% 96%;
+  --accent-foreground: 0 0% 10%;
   
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
 
-  --border: 250 20% 90%;
-  --input: 250 20% 90%;
-  --ring: 250 95% 60%;
+  --border: 0 0% 90%;
+  --input: 0 0% 90%;
+  --ring: 0 0% 20%;
 
   --radius: 0.5rem;
 }
 
 .dark {
-  --background: 250 20% 10%;
-  --foreground: 250 10% 98%;
+  --background: 0 0% 7%;
+  --foreground: 0 0% 98%;
   
-  --card: 250 20% 15%;
-  --card-foreground: 250 10% 98%;
+  --card: 0 0% 10%;
+  --card-foreground: 0 0% 98%;
   
-  --popover: 250 20% 15%;
-  --popover-foreground: 250 10% 98%;
+  --popover: 0 0% 10%;
+  --popover-foreground: 0 0% 98%;
   
-  --primary: 250 95% 65%;
-  --primary-foreground: 250 10% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
   
-  --secondary: 250 30% 20%;
-  --secondary-foreground: 250 10% 98%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 98%;
   
-  --muted: 250 30% 20%;
-  --muted-foreground: 250 5% 65%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 65%;
   
-  --accent: 250 30% 20%;
-  --accent-foreground: 250 10% 98%;
+  --accent: 0 0% 15%;
+  --accent-foreground: 0 0% 98%;
   
   --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 250 10% 98%;
+  --destructive-foreground: 0 0% 98%;
   
-  --border: 250 20% 25%;
-  --input: 250 20% 25%;
-  --ring: 250 95% 65%;
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+  --ring: 0 0% 80%;
 }
 
 @layer base {
@@ -83,4 +83,96 @@
 
 .dragging {
   @apply opacity-50 shadow-xl;
+}
+
+/* Calendar Styles */
+.rbc-calendar {
+  @apply font-sans bg-card rounded-lg shadow-lg font-display;
+}
+
+.rbc-toolbar {
+  @apply mb-6 p-4 border-b border-border;
+}
+
+.rbc-toolbar button {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/80 px-4 py-2 rounded-md text-sm font-medium transition-colors;
+}
+
+.rbc-toolbar button.rbc-active {
+  @apply bg-primary text-primary-foreground;
+}
+
+.rbc-header {
+  @apply bg-secondary/50 text-secondary-foreground py-4 text-sm font-medium border-b border-border font-display;
+}
+
+.rbc-time-header {
+  @apply bg-secondary/50 border-b border-border;
+}
+
+.rbc-time-content {
+  @apply border-l border-border;
+}
+
+.rbc-timeslot-group {
+  @apply border-b border-border min-h-[100px];
+}
+
+.rbc-time-slot {
+  @apply text-muted-foreground text-sm py-1;
+}
+
+.rbc-time-gutter {
+  @apply text-sm font-medium text-muted-foreground pr-4 w-24 font-display;
+}
+
+.rbc-event {
+  @apply rounded-md border-none shadow-sm px-2 py-1;
+}
+
+.rbc-event-content {
+  @apply text-sm font-medium font-display;
+}
+
+.rbc-today {
+  @apply bg-secondary/30;
+}
+
+.rbc-current-time-indicator {
+  @apply bg-primary h-0.5;
+}
+
+.rbc-time-view {
+  @apply border border-border rounded-lg;
+}
+
+.rbc-time-column {
+  @apply border-r border-border;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  @apply border-t border-border/50;
+}
+
+.rbc-time-header-content {
+  @apply border-l border-border;
+}
+
+.rbc-header + .rbc-header {
+  @apply border-l border-border;
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  @apply border-l border-border;
+}
+
+.selected-slot {
+  @apply bg-primary/10;
+}
+
+/* Add Inter font for display text */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+.font-display {
+  font-family: 'Inter', sans-serif;
 }

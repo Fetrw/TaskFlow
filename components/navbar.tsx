@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import { MoonIcon, SunIcon, LayoutDashboard } from "lucide-react"
-import { useTheme } from "next-themes"
-import { Button } from "@/components/ui/button"
+import { MoonIcon, SunIcon, LayoutDashboard, Calendar } from "lucide-react";
+import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/lib/utils";
 
 export function Navbar() {
-  const { setTheme } = useTheme()
+  const { setTheme } = useTheme();
+  const pathname = usePathname();
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -20,6 +24,32 @@ export function Navbar() {
           <LayoutDashboard className="h-6 w-6 text-primary" />
           <span className="text-xl font-bold">TaskFlow</span>
         </div>
+        <nav className="ml-8 flex space-x-4">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              className={cn(
+                "flex items-center space-x-2",
+                pathname === "/" && "bg-secondary"
+              )}
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              <span>Board</span>
+            </Button>
+          </Link>
+          <Link href="/schedule">
+            <Button
+              variant="ghost"
+              className={cn(
+                "flex items-center space-x-2",
+                pathname === "/schedule" && "bg-secondary"
+              )}
+            >
+              <Calendar className="h-4 w-4" />
+              <span>Schedule</span>
+            </Button>
+          </Link>
+        </nav>
         <div className="ml-auto flex items-center space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -44,5 +74,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  )
+  );
 }

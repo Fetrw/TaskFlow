@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,9 @@ type Task = {
   title: string;
   description: string;
   priority: "low" | "medium" | "high";
+  startTime?: string; // Add time fields
+  endTime?: string;
+  date?: string;
 };
 
 type Column = {
@@ -44,38 +47,46 @@ export function Board() {
     title: "",
     description: "",
     priority: "medium",
+    startTime: "",
+    endTime: "",
+    date: new Date().toISOString().split("T")[0],
   });
 
+  // Load data from localStorage on mount
   useEffect(() => {
     const savedColumns = localStorage.getItem("taskflow-columns");
     if (savedColumns) {
       setColumns(JSON.parse(savedColumns));
     } else {
       const defaultColumns = [
-        {
-          id: "todo",
-          title: "To Do",
-          tasks: [],
-        },
-        {
-          id: "in-progress",
-          title: "In Progress",
-          tasks: [],
-        },
-        {
-          id: "done",
-          title: "Done",
-          tasks: [],
-        },
+        { id: "todo", title: "To Do", tasks: [] },
+        { id: "in-progress", title: "In Progress", tasks: [] },
+        { id: "done", title: "Done", tasks: [] },
       ];
       setColumns(defaultColumns);
       localStorage.setItem("taskflow-columns", JSON.stringify(defaultColumns));
     }
   }, []);
 
+  // Save to localStorage whenever columns change
   useEffect(() => {
     if (columns.length > 0) {
       localStorage.setItem("taskflow-columns", JSON.stringify(columns));
+
+      // Save tasks to schedule
+      const events = columns.flatMap((column) =>
+        column.tasks
+          .filter((task) => task.startTime && task.endTime && task.date)
+          .map((task) => ({
+            id: task.id,
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            start: new Date(`${task.date}T${task.startTime}`),
+            end: new Date(`${task.date}T${task.endTime}`),
+          }))
+      );
+      localStorage.setItem("taskflow-schedule", JSON.stringify(events));
     }
   }, [columns]);
 
@@ -127,20 +138,30 @@ export function Board() {
   const addTask = (columnId: string) => {
     if (!newTask.title?.trim()) return;
 
-    const newColumns = [...columns];
-    const column = newColumns.find((col) => col.id === columnId);
-    if (!column) return;
-
     const task: Task = {
       id: `task-${Date.now()}`,
       title: newTask.title,
       description: newTask.description || "",
-      priority: (newTask.priority as "low" | "medium" | "high") || "medium",
+      priority: newTask.priority as "low" | "medium" | "high",
+      startTime: newTask.startTime,
+      endTime: newTask.endTime,
+      date: newTask.date,
     };
+
+    const newColumns = [...columns];
+    const column = newColumns.find((col) => col.id === columnId);
+    if (!column) return;
 
     column.tasks.push(task);
     setColumns(newColumns);
-    setNewTask({ title: "", description: "", priority: "medium" });
+    setNewTask({
+      title: "",
+      description: "",
+      priority: "medium",
+      startTime: "",
+      endTime: "",
+      date: new Date().toISOString().split("T")[0],
+    });
   };
 
   const updateTask = (
@@ -214,46 +235,62 @@ export function Board() {
                     <DialogTitle>Add New Task</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4 py-4">
-                    <div className="space-y-2">
+                    <Input
+                      placeholder="Task title"
+                      value={newTask.title}
+                      onChange={(e) =>
+                        setNewTask({ ...newTask, title: e.target.value })
+                      }
+                    />
+                    <Input
+                      placeholder="Description"
+                      value={newTask.description}
+                      onChange={(e) =>
+                        setNewTask({ ...newTask, description: e.target.value })
+                      }
+                    />
+                    <Select
+                      value={newTask.priority}
+                      onValueChange={(value) =>
+                        setNewTask({
+                          ...newTask,
+                          priority: value as "low" | "medium" | "high",
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select priority" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      type="date"
+                      value={newTask.date}
+                      onChange={(e) =>
+                        setNewTask({ ...newTask, date: e.target.value })
+                      }
+                    />
+                    <div className="flex gap-4">
                       <Input
-                        placeholder="Task title"
-                        value={newTask.title}
+                        type="time"
+                        placeholder="Start Time"
+                        value={newTask.startTime}
                         onChange={(e) =>
-                          setNewTask({ ...newTask, title: e.target.value })
+                          setNewTask({ ...newTask, startTime: e.target.value })
                         }
                       />
-                    </div>
-                    <div className="space-y-2">
                       <Input
-                        placeholder="Description"
-                        value={newTask.description}
+                        type="time"
+                        placeholder="End Time"
+                        value={newTask.endTime}
                         onChange={(e) =>
-                          setNewTask({
-                            ...newTask,
-                            description: e.target.value,
-                          })
+                          setNewTask({ ...newTask, endTime: e.target.value })
                         }
                       />
-                    </div>
-                    <div className="space-y-2">
-                      <Select
-                        value={newTask.priority}
-                        onValueChange={(value) =>
-                          setNewTask({
-                            ...newTask,
-                            priority: value as "low" | "medium" | "high",
-                          })
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select priority" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
                     </div>
                   </div>
                   <DialogClose asChild>
@@ -295,6 +332,17 @@ export function Board() {
                                       {task.description}
                                     </div>
                                   )}
+                                  {task.startTime &&
+                                    task.endTime &&
+                                    task.date && (
+                                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                                        <Clock className="h-3 w-3" />
+                                        <span>
+                                          {task.date} {task.startTime}-
+                                          {task.endTime}
+                                        </span>
+                                      </div>
+                                    )}
                                 </div>
                                 <div className="flex gap-2">
                                   <Dialog>
@@ -311,55 +359,38 @@ export function Board() {
                                       <DialogHeader>
                                         <DialogTitle>Edit Task</DialogTitle>
                                       </DialogHeader>
-                                      <div className="space-y-4 py-4">
-                                        <div className="space-y-2">
+                                      {editingTask && (
+                                        <div className="space-y-4 py-4">
                                           <Input
                                             placeholder="Task title"
-                                            value={editingTask?.title}
+                                            value={editingTask.title}
                                             onChange={(e) =>
-                                              setEditingTask(
-                                                editingTask
-                                                  ? {
-                                                      ...editingTask,
-                                                      title: e.target.value,
-                                                    }
-                                                  : null
-                                              )
+                                              setEditingTask({
+                                                ...editingTask,
+                                                title: e.target.value,
+                                              })
                                             }
                                           />
-                                        </div>
-                                        <div className="space-y-2">
                                           <Input
                                             placeholder="Description"
-                                            value={editingTask?.description}
+                                            value={editingTask.description}
                                             onChange={(e) =>
-                                              setEditingTask(
-                                                editingTask
-                                                  ? {
-                                                      ...editingTask,
-                                                      description:
-                                                        e.target.value,
-                                                    }
-                                                  : null
-                                              )
+                                              setEditingTask({
+                                                ...editingTask,
+                                                description: e.target.value,
+                                              })
                                             }
                                           />
-                                        </div>
-                                        <div className="space-y-2">
                                           <Select
-                                            value={editingTask?.priority}
+                                            value={editingTask.priority}
                                             onValueChange={(value) =>
-                                              setEditingTask(
-                                                editingTask
-                                                  ? {
-                                                      ...editingTask,
-                                                      priority: value as
-                                                        | "low"
-                                                        | "medium"
-                                                        | "high",
-                                                    }
-                                                  : null
-                                              )
+                                              setEditingTask({
+                                                ...editingTask,
+                                                priority: value as
+                                                  | "low"
+                                                  | "medium"
+                                                  | "high",
+                                              })
                                             }
                                           >
                                             <SelectTrigger>
@@ -377,9 +408,51 @@ export function Board() {
                                               </SelectItem>
                                             </SelectContent>
                                           </Select>
+                                          <Input
+                                            type="date"
+                                            value={editingTask.date}
+                                            onChange={(e) =>
+                                              setEditingTask({
+                                                ...editingTask,
+                                                date: e.target.value,
+                                              })
+                                            }
+                                          />
+                                          <div className="flex gap-4">
+                                            <Input
+                                              type="time"
+                                              placeholder="Start Time"
+                                              value={editingTask.startTime}
+                                              onChange={(e) =>
+                                                setEditingTask({
+                                                  ...editingTask,
+                                                  startTime: e.target.value,
+                                                })
+                                              }
+                                            />
+                                            <Input
+                                              type="time"
+                                              placeholder="End Time"
+                                              value={editingTask.endTime}
+                                              onChange={(e) =>
+                                                setEditingTask({
+                                                  ...editingTask,
+                                                  endTime: e.target.value,
+                                                })
+                                              }
+                                            />
+                                          </div>
                                         </div>
-                                      </div>
-                                      <DialogClose asChild>
+                                      )}
+                                      <div className="flex justify-between">
+                                        <Button
+                                          variant="destructive"
+                                          onClick={() =>
+                                            deleteTask(column.id, task.id)
+                                          }
+                                        >
+                                          Delete
+                                        </Button>
                                         <Button
                                           onClick={() =>
                                             editingTask &&
@@ -392,7 +465,7 @@ export function Board() {
                                         >
                                           Save Changes
                                         </Button>
-                                      </DialogClose>
+                                      </div>
                                     </DialogContent>
                                   </Dialog>
                                   <Button
